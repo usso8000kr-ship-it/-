@@ -1,128 +1,233 @@
 <!DOCTYPE html>
+
 <html lang="ko">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🍽️현정Pick점메추</title>
+<title>🍽️ 현정pick점메추</title>
 
 <style>
 
 body{
-    background:#fff4e6;
-    text-align:center;
+
+    margin:0;
+
+    padding:0;
+
     font-family:Arial;
-    padding-top:50px;
+
+    text-align:center;
+
+    /* 🔥 네가 받은 디자인 그대로 */
+
+    background: url("/mnt/data/a_bright_playful_web_app_ui_mockup_sho.png");
+
+    background-size:cover;
+
+    background-position:center;
+
 }
 
-h1{
-    font-size:40px;
-}
+/* 버튼은 이미지 위에 자연스럽게 떠있게 */
 
-button{
+.lunch, .dinner{
+
     font-size:22px;
+
     padding:15px 30px;
+
     margin:10px;
+
     border:none;
+
     border-radius:15px;
+
     cursor:pointer;
+
+    position:relative;
+
+    z-index:2;
+
+    transition:0.2s;
+
 }
 
-.lunch{
-    background:#ffd43b;
-}
+.lunch:hover{ transform:scale(1.05); }
 
-.dinner{
-    background:#ff8787;
-}
+.dinner:hover{ transform:scale(1.05); }
+
+.lunch{ background:#ffd43b; }
+
+.dinner{ background:#ff8787; }
+
+/* 결과창 */
 
 #result{
-    margin-top:40px;
-    font-size:35px;
+
+    margin-top:30px;
+
+    font-size:40px;
+
     font-weight:bold;
+
+    position:relative;
+
+    z-index:2;
+
+    color:#333;
+
+}
+
+/* 🔥 슬롯 릴 스타일 */
+
+.slot{
+
+    display:inline-block;
+
+    background:white;
+
+    padding:15px 25px;
+
+    border-radius:18px;
+
+    box-shadow:0 10px 20px rgba(0,0,0,0.15);
+
+    transform:scale(1.05);
+
+    animation:pop 0.2s ease;
+
+}
+
+@keyframes pop{
+
+    0%{transform:scale(0.9);}
+
+    100%{transform:scale(1.05);}
+
 }
 
 .card{
-    background:white;
-    width:80%;
-    max-width:500px;
-    margin:auto;
-    padding:30px;
-    border-radius:20px;
-    box-shadow:0 0 15px rgba(0,0,0,0.1);
+
+    padding-top:80px;
+
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="card">
 
-<h1>🍽️현정Pick점메추 🍽️</h1>
+<h1>🍽️ 현정pick점메추 🍽️</h1>
 
 <p>배고프면 눌러라 😋</p>
 
-<button class="lunch" onclick="lunch()">
-🍱 점메추
-</button>
+<button class="lunch" onclick="lunch()">🍱 점메추</button>
 
-<button class="dinner" onclick="dinner()">
-🍖 저메추
-</button>
+<button class="dinner" onclick="dinner()">🍖 저메추</button>
 
-<div id="result">
-🤔 메뉴를 고민중...
-</div>
+<div id="result">🤔 메뉴를 고민중...</div>
 
 </div>
 
 <script>
 
 const lunchFoods = [
-"제육볶음",
-"돈까스",
-"국밥",
-"김치찌개",
-"냉면",
-"햄버거",
-"짜장면",
-"짬뽕",
-"칼국수",
-"비빔밥"
+
+"제육볶음","돈까스","국밥","김치찌개","냉면",
+
+"햄버거","짜장면","짬뽕","칼국수","비빔밥"
+
 ];
 
 const dinnerFoods = [
-"치킨",
-"피자",
-"삼겹살",
-"족발",
-"닭갈비",
-"마라탕",
-"곱창",
-"회",
-"떡볶이",
-"샤브샤브"
+
+"치킨","피자","삼겹살","족발","닭갈비",
+
+"마라탕","곱창","회","떡볶이","샤브샤브"
+
 ];
+
+/* 🎰 슬롯 핵심 (부드럽게 도는 버전) */
+
+function slotSpin(list, emoji, title){
+
+let resultBox = document.getElementById("result");
+
+let duration = 1600;
+
+let start = Date.now();
+
+function spin(){
+
+    let elapsed = Date.now() - start;
+
+    let progress = elapsed / duration;
+
+    // 🔥 점점 느려지는 속도 (슬롯 핵심)
+
+    let speed = 50 + progress * 200;
+
+    let food = list[Math.floor(Math.random() * list.length)];
+
+    resultBox.innerHTML = `
+
+        <div class="slot">
+
+            ${emoji}<br>
+
+            ${food}
+
+        </div>
+
+    `;
+
+    if(elapsed < duration){
+
+        setTimeout(spin, speed);
+
+    } else {
+
+        let final = list[Math.floor(Math.random() * list.length)];
+
+        resultBox.innerHTML = `
+
+            ${emoji}<br><br>
+
+            ${title}<br><br>
+
+            <div class="slot">✨ ${final} ✨</div>
+
+        `;
+
+    }
+
+}
+
+spin();
+
+}
 
 function lunch(){
 
-let food =
-lunchFoods[Math.floor(Math.random()*lunchFoods.length)];
+    slotSpin(lunchFoods, "🍱", "오늘의 점심은!");
 
-document.getElementById("result").innerHTML =
-"🍱<br>오늘의 점심은!<br><br>✨ " + food + " ✨";
 }
 
 function dinner(){
 
-let food =
-dinnerFoods[Math.floor(Math.random()*dinnerFoods.length)];
+    slotSpin(dinnerFoods, "🍖", "오늘의 저녁은!");
 
-document.getElementById("result").innerHTML =
-"🍖<br>오늘의 저녁은!<br><br>✨ " + food + " ✨";
 }
 
 </script>
 
-</
+</body>
+
+</html>
