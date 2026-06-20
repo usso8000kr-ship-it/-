@@ -1,0 +1,51 @@
+<style>
+/* 슬롯 애니메이션 추가 */
+.slot {
+    display:inline-block;
+    animation: spin 0.08s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translateY(-2px); opacity:0.4; }
+    50% { transform: translateY(2px); opacity:1; }
+    100% { transform: translateY(-2px); opacity:0.4; }
+}
+</style>
+
+<script>
+// 슬롯 연출용 함수 (기존 코드 건드리지 않음)
+function slotEffect(list, finalFood, emoji, prefix){
+
+    let i = 0;
+    let resultBox = document.getElementById("result");
+
+    let interval = setInterval(() => {
+        let fake = list[Math.floor(Math.random() * list.length)];
+        resultBox.innerHTML =
+            emoji + "<br>" + prefix + "<br><br>" +
+            "<span class='slot'>🎰 " + fake + " 🎰</span>";
+        i++;
+    }, 80);
+
+    setTimeout(() => {
+        clearInterval(interval);
+        resultBox.innerHTML =
+            emoji + "<br>" + prefix + "<br><br>" +
+            "✨ " + finalFood + " ✨";
+    }, 2000);
+}
+
+// 기존 함수 "그대로 유지 + 슬롯만 추가 실행"
+const oldLunch = lunch;
+const oldDinner = dinner;
+
+lunch = function(){
+    let food = lunchFoods[Math.floor(Math.random()*lunchFoods.length)];
+    slotEffect(lunchFoods, food, "🍱", "오늘의 점심은!");
+};
+
+dinner = function(){
+    let food = dinnerFoods[Math.floor(Math.random()*dinnerFoods.length)];
+    slotEffect(dinnerFoods, food, "🍖", "오늘의 저녁은!");
+};
+</script>
