@@ -1,51 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🍽️ 현정의 점메추</title>
+
 <style>
-/* 슬롯 애니메이션 추가 */
-.slot {
-    display:inline-block;
-    animation: spin 0.08s linear infinite;
+
+body{
+    background:#fff4e6;
+    text-align:center;
+    font-family:Arial;
+    padding-top:50px;
 }
 
-@keyframes spin {
-    0% { transform: translateY(-2px); opacity:0.4; }
-    50% { transform: translateY(2px); opacity:1; }
-    100% { transform: translateY(-2px); opacity:0.4; }
+h1{
+    font-size:40px;
 }
+
+button{
+    font-size:22px;
+    padding:15px 30px;
+    margin:10px;
+    border:none;
+    border-radius:15px;
+    cursor:pointer;
+}
+
+.lunch{
+    background:#ffd43b;
+}
+
+.dinner{
+    background:#ff8787;
+}
+
+#result{
+    margin-top:40px;
+    font-size:35px;
+    font-weight:bold;
+}
+
+.card{
+    background:white;
+    width:80%;
+    max-width:500px;
+    margin:auto;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+
 </style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>🍽️ 현정의 점메추 🍽️</h1>
+
+<p>배고프면 눌러라 😋</p>
+
+<button class="lunch" onclick="lunch()">
+🍱 점메추
+</button>
+
+<button class="dinner" onclick="dinner()">
+🍖 저메추
+</button>
+
+<div id="result">
+🤔 메뉴를 고민중...
+</div>
+
+</div>
 
 <script>
-// 슬롯 연출용 함수 (기존 코드 건드리지 않음)
-function slotEffect(list, finalFood, emoji, prefix){
 
-    let i = 0;
-    let resultBox = document.getElementById("result");
+const lunchFoods = [
+"제육볶음",
+"돈까스",
+"국밥",
+"김치찌개",
+"냉면",
+"햄버거",
+"짜장면",
+"짬뽕",
+"칼국수",
+"비빔밥"
+];
 
-    let interval = setInterval(() => {
-        let fake = list[Math.floor(Math.random() * list.length)];
-        resultBox.innerHTML =
-            emoji + "<br>" + prefix + "<br><br>" +
-            "<span class='slot'>🎰 " + fake + " 🎰</span>";
-        i++;
-    }, 80);
+const dinnerFoods = [
+"치킨",
+"피자",
+"삼겹살",
+"족발",
+"닭갈비",
+"마라탕",
+"곱창",
+"회",
+"떡볶이",
+"샤브샤브"
+];
 
-    setTimeout(() => {
-        clearInterval(interval);
-        resultBox.innerHTML =
-            emoji + "<br>" + prefix + "<br><br>" +
-            "✨ " + finalFood + " ✨";
-    }, 2000);
+function lunch(){
+
+let food =
+lunchFoods[Math.floor(Math.random()*lunchFoods.length)];
+
+document.getElementById("result").innerHTML =
+"🍱<br>오늘의 점심은!<br><br>✨ " + food + " ✨";
 }
 
-// 기존 함수 "그대로 유지 + 슬롯만 추가 실행"
-const oldLunch = lunch;
-const oldDinner = dinner;
+function dinner(){
 
-lunch = function(){
-    let food = lunchFoods[Math.floor(Math.random()*lunchFoods.length)];
-    slotEffect(lunchFoods, food, "🍱", "오늘의 점심은!");
-};
+let food =
+dinnerFoods[Math.floor(Math.random()*dinnerFoods.length)];
 
-dinner = function(){
-    let food = dinnerFoods[Math.floor(Math.random()*dinnerFoods.length)];
-    slotEffect(dinnerFoods, food, "🍖", "오늘의 저녁은!");
-};
+document.getElementById("result").innerHTML =
+"🍖<br>오늘의 저녁은!<br><br>✨ " + food + " ✨";
+}
+
 </script>
+
+</body>
+</html>
