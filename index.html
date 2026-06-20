@@ -10,12 +10,12 @@ body {
     padding: 0;
     font-family: Arial, sans-serif;
     text-align: center;
-    background: #FFF9E6; /* 배경 베이스 컬러 */
+    background: #FFF9E6; 
 }
 
 .card {
     padding-top: 50px;
-    max-width: 600px;
+    max-width: 650px;
     margin: 0 auto;
 }
 
@@ -50,22 +50,21 @@ p {
 .lunch { background: #ffd43b; color: #331B05; }
 .dinner { background: #ff8787; color: white; }
 
-/* 🎰 골드 슬롯머신 기계 본체 디자인 (선택 영역 재현) */
+/* 🎰 3구 슬롯머신 골드 프레임 본체 */
 .slot-machine-frame {
     display: inline-flex;
     background: linear-gradient(145deg, #FFC033, #D49000);
     border: 8px solid #EAA816;
     border-radius: 35px;
-    padding: 25px 40px;
+    padding: 25px;
     margin-top: 25px;
     box-shadow: inset 0 0 20px rgba(0,0,0,0.3), 0 15px 25px rgba(0,0,0,0.15);
     position: relative;
-    justify-content: center;
+    gap: 15px; 
     align-items: center;
-    min-width: 240px;
 }
 
-/* 테두리 전구 도트 라인 효과 */
+/* 테두리 전구 조명 효과 */
 .slot-machine-frame::before {
     content: '';
     position: absolute;
@@ -76,40 +75,41 @@ p {
     animation: blink 0.5s infinite alternate;
 }
 
-/* 내부 슬롯 화면 디스플레이 창 */
-.slot-display-window {
-    width: 100%;
-    background: white;
-    padding: 20px 40px;
-    border-radius: 15px;
+/* 3개의 개별 슬롯 창 스타일 */
+.reel-window {
+    width: 120px;
+    height: 120px;
+    background: #F9F9F9;
     border: 5px solid #63432A;
-    box-shadow: inset 0 8px 10px rgba(0,0,0,0.15);
-    min-height: 90px;
+    border-radius: 15px;
+    box-shadow: inset 0 6px 10px rgba(0,0,0,0.15);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-}
-
-/* 당첨 시 발광 하이라이트 애니메이션 효과 */
-.slot-display-window.hit {
-    border-color: #FFD43B;
-    box-shadow: 0 0 25px #FFD43B, inset 0 0 10px #FFD43B;
-    animation: pulse 0.5s infinite alternate;
-}
-
-/* 텍스트 렌더링 스타일 */
-.food-text {
-    font-size: 32px;
-    font-weight: 900;
+    font-size: 22px;
+    font-weight: 800;
     color: #4A4A4A;
-    white-space: nowrap;
-}
-.slot-display-window.hit .food-text {
-    color: #FF3E3E;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* 결과 메시지 배너 */
+/* 🔥 최종 멈췄을 때 가운데(2번째) 슬롯 창 골드 발광 */
+.reel-window.center-hit {
+    border-color: #FFD43B;
+    background: #FFF;
+    box-shadow: 0 0 25px #FFD43B, inset 0 0 10px #FFD43B;
+    color: #FF3E3E; 
+    font-size: 26px;
+    transform: scale(1.05);
+}
+
+/* 양 옆의 흐릿하게 죽는 보조 슬롯 스타일 */
+.reel-window.side-fade {
+    opacity: 0.6;
+    transform: scale(0.95);
+}
+
+/* 상황 상태 안내판 */
 #result-msg {
     margin-top: 25px;
     font-size: 24px;
@@ -118,14 +118,24 @@ p {
     min-height: 35px;
 }
 
+/* 하단 큰 최종 결과 텍스트 */
+#final-banner {
+    font-size: 36px;
+    font-weight: 900;
+    color: #FF3E3E;
+    margin-top: 20px;
+    display: none;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
 /* 애니메이션 Keyframes */
 @keyframes blink {
     0% { border-color: white; opacity: 0.5; }
     100% { border-color: #FFD43B; opacity: 1; }
 }
-@keyframes pulse {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.03); }
+@keyframes popIn {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 </style>
 </head>
@@ -141,14 +151,17 @@ p {
     <!-- 상황 상태 안내판 -->
     <div id="result-msg">🤔 메뉴를 고민중...</div>
 
-    <!-- 🎰 디자인 복제 슬롯머신 박스 영역 -->
+    <!-- 🎰 3구 슬롯머신 박스 영역 -->
     <div>
         <div class="slot-machine-frame">
-            <div class="slot-display-window" id="windowBox">
-                <div class="food-text" id="foodDisplay">김치찌개</div>
-            </div>
+            <div class="reel-window" id="reel1">돈까스</div>
+            <div class="reel-window" id="reel2">김치찌개</div>
+            <div class="reel-window" id="reel3">국밥</div>
         </div>
     </div>
+
+    <!-- 최종 결과 배너 -->
+    <div id="final-banner">✨ <span id="final-food">김치찌개</span> ✨</div>
 </div>
 
 <script>
@@ -163,42 +176,73 @@ const dinnerFoods = [
 
 let isRunning = false;
 
-/* 🎰 슬롯 핵심 함수 (보내주신 스크립트 점진 감속 알고리즘 완벽 유지) */
+/* 🎰 초고속 구동 후 점진적 제동(Cubic-Bezier 감속) 슬롯 엔진 */
 function slotSpin(list, emoji, title) {
-    if (isRunning) return; // 중복 클릭 방지
+    if (isRunning) return; 
     isRunning = true;
 
     let msgBox = document.getElementById("result-msg");
-    let foodDisplay = document.getElementById("foodDisplay");
-    let windowBox = document.getElementById("windowBox");
+    let finalBanner = document.getElementById("final-banner");
+    let finalFood = document.getElementById("final-food");
+    
+    let r1 = document.getElementById("reel1");
+    let r2 = document.getElementById("reel2");
+    let r3 = document.getElementById("reel3");
 
-    // 초기화 및 구동 중 연출
-    windowBox.classList.remove("hit");
+    // 매 회 구동시 초기 리셋
+    r1.classList.remove("side-fade");
+    r2.classList.remove("center-hit");
+    r3.classList.remove("side-fade");
+    finalBanner.style.display = "none";
+    
     msgBox.innerText = `⏳ 슬롯 돌아가는 중...`;
 
-    let duration = 1600;
-    let start = Date.now();
+    const totalDuration = 2500; // 슬롯이 도는 총 시간 (2.5초)
+    const startTime = Date.now();
 
     function spin() {
-        let elapsed = Date.now() - start;
-        let progress = elapsed / duration;
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / totalDuration, 1);
         
-        // 점점 느려지는 속도 수식 유지
-        let speed = 50 + progress * 200;
-        let food = list[Math.floor(Math.random() * list.length)];
+        // 📈 Ease-Out 감속 수식 적용 (처음엔 극도로 빠르고, 마지막엔 미끄러지듯 감속)
+        // 1 - (1 - x)^4 수식을 통해 후반부 제동 딜레이를 극대화합니다.
+        const easeOutProgress = 1 - Math.pow(1 - progress, 4);
         
-        foodDisplay.innerText = food;
+        // 현재 속도 조율 간격 (시작할 때는 25ms 간격 초고속 -> 끝날 때는 450ms 간격으로 느려짐)
+        const currentDelay = 25 + (easeOutProgress * 425);
 
-        if (elapsed < duration) {
-            setTimeout(spin, speed);
+        // 랜덤 메뉴 서칭 변경 연출
+        let food1 = list[Math.floor(Math.random() * list.length)];
+        let food2 = list[Math.floor(Math.random() * list.length)];
+        let food3 = list[Math.floor(Math.random() * list.length)];
+        
+        r1.innerText = food1;
+        r2.innerText = food2;
+        r3.innerText = food3;
+
+        if (elapsed < totalDuration) {
+            // 연산된 프레임 딜레이 타임에 맞춰 루프 재귀호출
+            setTimeout(spin, currentDelay);
         } else {
-            // 최종 정지 및 당첨 연출
+            // 루프 종료 시 최종 정착 연출
             let final = list[Math.floor(Math.random() * list.length)];
-            foodDisplay.innerText = `✨ ${final} ✨`;
+            let side1 = list[Math.floor(Math.random() * list.length)];
+            let side3 = list[Math.floor(Math.random() * list.length)];
+            
+            r1.innerText = side1;
+            r2.innerText = final; // 센터 고정
+            r3.innerText = side3;
+
             msgBox.innerText = `${emoji} ${title}`;
             
-            // 디자인 시각 효과(노란 전광판 점등) 추가
-            windowBox.classList.add("hit");
+            // 시각 그래픽 클래스 추가
+            r1.classList.add("side-fade");
+            r2.classList.add("center-hit");
+            r3.classList.add("side-fade");
+
+            finalFood.innerText = final;
+            finalBanner.style.display = "block";
+            
             isRunning = false;
         }
     }
