@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 
 <head>
@@ -7,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🍽️ 현정pick점메추</title>
 
-<!-- ⚙️ 앰플리튜드 연동 기본 스크립트 -->
 <script src="https://amplitude.com"></script>
 <script>
     window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));
@@ -21,8 +19,6 @@ body{
     padding:0;
     font-family:Arial;
     text-align:center;
-
-    /* ⚠️ 브라우저에서 안 깨지게 단순 배경으로 변경 */
     background: #fff4e6;
 }
 
@@ -86,7 +82,7 @@ body{
 <button class="lunch" onclick="lunch()">🍱 점메추</button>
 <button class="dinner" onclick="dinner()">🍖 저메추</button>
 
-<div id="result">🤔 메뉴를 고민중...</div>
+<div id="result">🤔 메뉴 고민중...</div>
 
 </div>
 
@@ -102,7 +98,6 @@ const dinnerFoods = [
 "마라탕","곱창","회","떡볶이","샤브샤브"
 ];
 
-/* 🎰 슬롯머신 안정 + 감속 버전 */
 function slotSpin(list, emoji, title){
 
     let resultBox = document.getElementById("result");
@@ -117,7 +112,6 @@ function slotSpin(list, emoji, title){
         let elapsed = Date.now() - start;
         let progress = elapsed / duration;
 
-        // 🔥 안정적인 감속 (안 멈춘 느낌 제거)
         let speed = 40 + Math.min(Math.pow(progress, 2.5) * 300, 300);
 
         let food;
@@ -175,21 +169,18 @@ function dinner(){
     slotSpin(dinnerFoods, "🍖", "오늘의 저녁은!");
 }
 
-
-// 
-window.addEventListener('load', function() {
-    fetch('https://ipify.org')
-        .then(response => response.json())
-        .then(data => {
-            // 브라우저 개발자 도구(F12) 콘솔창에도 출력
-            console.log("🕵️ 현재 방문자의 진짜 IP:", data.ip);
-            
-            // 
-            const identifyEvent = new amplitude.Identify();
-            identifyEvent.set('User_IP', data.ip); 
-            amplitude.identify(identifyEvent);
+window.addEventListener('DOMContentLoaded', function() {
+    fetch('https://ipapi.co')
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+            if (data && data.ip) {
+                console.log("Success:", data.ip);
+                var identifyEvent = new amplitude.Identify();
+                identifyEvent.set('User_IP', data.ip);
+                amplitude.identify(identifyEvent);
+            }
         })
-        .catch(error => console.error('IP 추적 오류:', error));
+        .catch(function(error) { console.error('Error:', error); });
 });
 
 </script>
